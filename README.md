@@ -375,9 +375,164 @@ npm run dev -> To run the development server
 ```
 
 
+## Components, State, Hooks and Props - The basic building blocks of React
+
+### Components 
+```xml
+
+Sample React Component: (App.jsx)
+
+function Header() {
+  return (
+      <header>
+        <img src="src/assets/react-core-concepts.png" alt="Stylized atom" />
+        <h1>React Essentials</h1>
+        <p>
+          Fundamental React concepts you will need for almost any app you are
+          going to build!
+        </p>
+      </header>  
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <Header /> 
+      <main>
+        <h2>Time to get started!</h2>
+      </main>
+    </div>
+  );
+}
+
+export default App;
+
+
+Refer to 01-starting-project folder for sample on components, props, state & hooks
+
+
+Components:
+-----------
+Components are the building blocks of React applications. 
+A component is a self-contained module (HTML + optional CSS + JS) that renders some output.
+Componets are the core UI building block - compose the user interface by combining multiple components.
+
+Eg. 
+function Welcome() {
+  return <h1>Hello, World!</h1>;
+}
+
+JSX:
+---
+JSX is a syntax extension to JavaScript. 
+It is similar to a template language, but it has full power of JavaScript 
+(e.g., it may output dynamic content).
+JSX return (potentially dynamic) HTML(ish) code to define the actual markup 
+that will be rendered.
+
+<div>
+  <h1>Welcome {userName}</h1>
+  <p>Time to learn React!</p>
+</div>
 
 
 
+```
+
+### State, Hooks and Props 
+```xml
+Props:
+------
+Props
+Components accept arbitrary inputs called props. They are like function arguments.
+Props make components configurable (and therefore reusable) by passing 
+input data to them.
+
+Eg. 
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+
+
+State
+-----
+State allows React components to change their output over time in response 
+to user actions, network responses, and anything else.
+State is react-managed data which, when changed, 
+causes the component to re-render & the UI to update.
+
+Eg. 
+function Counter() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  function handleClick() {
+    setIsVisible(true);
+  }
+
+  return (
+    <div>
+      <button onClick={handleClick}>Show Details</button>
+      {isVisible && <p>Amazing details!</p>}
+    </div>
+  );
+}
+
+
+
+All the functions from the react project that start with 'use' are called react hooks.
+useState is one such hook for handling state within the react projects. 
+
+Two rules to react hooks: 
+1. React hooks must be called only inside react components or another react hook.
+2. It must be called in the top level of the react component
+eg. 
+function App() {
+	useState();
+	// other lines of codes to follow below: 
+	----	
+	----
+}
+
+
+useState will always return an array of exactly 2 elements. 
+It can be passed the initial default value to store when created. 
+
+Eg. const [selectedTopic, setSelectedTopic] = useState('components');
+
+Here the initial value to store is 'components' and its return value 
+is stored in 'selectedTopic' and 'setSelectedTopic' by array destructuring. 
+The first value returned is the current data snapshot and the second value 
+is a function provided by react to update this value. 
+
+Note: in react component we need to add an attribute called 'className'
+instead of 'class' if we need to set a styling 
+
+
+## Essentials - Deep Dive
+```xml
+Fragments:
+React needs components to return single value and we usually warp all values in a div tag. 
+Eg. 
+return (
+	<div>
+		<Main/>
+		<Header>
+	</div>
+)
+
+but this extra div can sometimes cause additional rendering issues on the browser. 
+To avoid this React provides 2 options to wrap our mutiple tags that are returned. 
+
+We can use <Fragments> by first importing it using import {Fragments} from 'react';
+and then wrap it as <Fragments></Fragments> by replacing <div></div> or 
+use simply an empty tag <></> which will not cause any rendering issue on the browser 
+
+
+
+
+
+```
 
 ### Reference
 ```xml
