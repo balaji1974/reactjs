@@ -367,7 +367,7 @@ greet();
 ```xml
 Running the sample Reactjs project from VS Code:
 Open the folder containing the project: 
-01-starting-project
+01-01-starting-project
 
 On the terminal run the following command:
 npm install -> To install all the dependencies
@@ -377,51 +377,20 @@ npm run dev -> To run the development server
 
 ## Components, State, Hooks and Props - The basic building blocks of React
 
-### Components 
+### Components, JSX and Dynamic Content
 ```xml
 
-Sample React Component: (App.jsx)
+Download 01-01-starting-project folder for inital project setup
+Copy it to 01-02-start-project-components 
+This will be our working project
 
-function Header() {
-  return (
-      <header>
-        <img src="src/assets/react-core-concepts.png" alt="Stylized atom" />
-        <h1>React Essentials</h1>
-        <p>
-          Fundamental React concepts you will need for almost any app you are
-          going to build!
-        </p>
-      </header>  
-  );
-}
+As usual go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
 
-function App() {
-  return (
-    <div>
-      <Header /> 
-      <main>
-        <h2>Time to get started!</h2>
-      </main>
-    </div>
-  );
-}
-
-export default App;
-
-
-Refer to 01-starting-project folder for sample on components, props, state & hooks
-
-
-Components:
------------
-Components are the building blocks of React applications. 
-A component is a self-contained module (HTML + optional CSS + JS) that renders some output.
-Componets are the core UI building block - compose the user interface by combining multiple components.
-
-Eg. 
-function Welcome() {
-  return <h1>Hello, World!</h1>;
-}
+In this project index.html load the index.jsx file which is 
+responsible for loading the starting page
 
 JSX:
 ---
@@ -436,12 +405,123 @@ that will be rendered.
   <p>Time to learn React!</p>
 </div>
 
+Components:
+-----------
+Components are the building blocks of React applications. 
+A component is a self-contained module (HTML + optional CSS + JS) that renders some output.
+Componets are the core UI building block - compose the user interface by combining multiple components.
+
+Components function must follow 2 rules:
+1. Its name starts with upper case character
+2. It must return renderable content 
+
+Eg. 
+function Welcome() {
+  return <h1>Hello, World!</h1>;
+}
+
+
+From the original App.jsx file cut the header section and create a new component
+called Header() and return its content. 
+
+function Header() {
+  return (
+      <header>
+        <img src="src/assets/react-core-concepts.png" alt="Stylized atom" />
+        <h1>React Essentials</h1>
+        <p>
+          Fundamental React concepts you will need for almost any app you are
+          going to build!
+        </p>
+      </header>  
+  );
+}
+
+Add this Header as a tag in the original area where you cut this content from. 
+function App() {
+  return (
+    <div>
+      <Header /> 
+      <main>
+        <h2>Time to get started!</h2>
+      </main>
+    </div>
+  );
+}
+
+export default App;
+
+
+Note: 
+.jsx is a file extension that's not supported by the browser! 
+It's working because you're working in a React project that supports 
+this special extension. Because this extension "tells" the underlying 
+build process (which is running behind the scenes when the development 
+server is running) that a file contains JSX code (which is also not 
+supported by browsers).
+
+
+To add dynamic content to our react code, lets add the following
+to the beginning App.jsx that will return a random dynamic value 
+when the function is called from the reactDescriptions array. 
+
+const reactDescriptions = ['Fundamental', 'Crucial', 'Core'];
+
+function genRandomInt(max) {
+  return Math.floor(Math.random() * (max + 1));
+}
+
+Next call this function inside the Header function:
+function Header() {
+   const description = reactDescriptions[genRandomInt(2)];
+
+  return (
+    <header> 
+      <img src="src/assets/react-core-concepts.png" alt="Stylized atom" />
+      <h1>React Essentials</h1>
+      <p>
+        {description} React concepts you will need for almost any app you are
+        going to build!
+      </p>
+    </header>
+  );
+}
+
+Next we can load the image dynamically:
+import reactImg from "./assets/react-core-concepts.png";
+
+And add this import in the Header component
+function Header() {
+   const description = reactDescriptions[genRandomInt(2)];
+
+  return (
+    <header> 
+      <img src={reactImg} alt="Stylized atom" />
+      <h1>React Essentials</h1>
+      <p>
+        {description} React concepts you will need for almost any app you are
+        going to build!
+      </p>
+    </header>
+  );
+}
 
 
 ```
 
 ### State, Hooks and Props 
 ```xml
+Download 01-02-start-project-components folder for inital project setup
+Copy it to 01-03-start-project-props 
+This will be our working project
+
+As usual go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+
+
 Props:
 ------
 Props
