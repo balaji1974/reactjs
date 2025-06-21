@@ -509,7 +509,7 @@ function Header() {
 
 ```
 
-### State, Hooks and Props 
+### Props 
 ```xml
 Download 01-02-start-project-components folder for inital project setup
 Copy it to 01-03-start-project-props 
@@ -803,29 +803,60 @@ function export default TabButton({children, onSelect}) {
 }
 
 
-State
------
-State allows React components to change their output over time in response 
-to user actions, network responses, and anything else.
-State is react-managed data which, when changed, 
-causes the component to re-render & the UI to update.
-
-Eg. 
-function Counter() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  function handleClick() {
-    setIsVisible(true);
-  }
-
-  return (
-    <div>
-      <button onClick={handleClick}>Show Details</button>
-      {isVisible && <p>Amazing details!</p>}
-    </div>
-  );
+Passing arguments to custom function:
+-------------------------------------
+Change the handleClick function to accept a parameter:
+function handleClick(selectedButton) {
+	console.log("Tab clicked " + selectedButton);
 }
 
+Next pass the paramter when calling this function using arrow function, 
+in our case using the anynomous arrow function: 
+<TabButton onSelect={()=>handleClick('components')}>Components</TabButton>
+<TabButton onSelect={()=>handleClick('jsx')}>JSX</TabButton>
+<TabButton onSelect={()=>handleClick('props')}>Props</TabButton>
+<TabButton onSelect={()=>handleClick('state')}>State</TabButton>
+
+Note:
+<TabButton onSelect={handleClick('state')}>State</TabButton>
+This will not work as react doesnt know how to handle this value 
+So we must use arrow function in this instance for React build process 
+to work correctly
+
+Even if the function is called as a result of onClick it cannot re-render the UI
+to allow the changed values to reflect on the UI, which once rendered initially 
+will not render again. 
+
+Eg. 
+let tabContent = "Initial value";
+function handleClick(selectedButton) {
+	tabContent=selectedButton;
+}
+
+and printing the {tabContent} in the UI will not allow it to change for 
+every click of the button. 
+This can be achieved through state management. 
+
+```
+
+### State and Hooks
+```xml
+Download 01-03-start-project-props folder for inital project setup
+Copy it to 01-04-start-project-state 
+This will be our working project
+
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+Hooks
+-----
+A functions that start with 'use' from the react projects are 
+considered as react hooks
+Eg.
+// useState is a react hook 
+import {useState} from "react";
 
 
 All the functions from the react project that start with 'use' are called react hooks.
@@ -842,20 +873,151 @@ function App() {
 	----
 }
 
+State
+-----
+State allows React components to change their output over time in response 
+to user actions, network responses, and anything else.
+State is react-managed data which, when changed, 
+causes the component to re-render & the UI to update.
+
+Eg. 
+function Counter() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  function handleClick() {
+    setIsVisible(!isVisible);
+  }
+
+  return (
+    <div>
+      <button onClick={handleClick}>Show Details</button>
+      {isVisible && <p>Amazing details!</p>}
+    </div>
+  );
+}
+
 
 useState will always return an array of exactly 2 elements. 
 It can be passed the initial default value to store when created. 
 
 Eg. const [selectedTopic, setSelectedTopic] = useState('components');
 
-Here the initial value to store is 'components' and its return value 
-is stored in 'selectedTopic' and 'setSelectedTopic' by array destructuring. 
+Here the initial value to store is 'components' and is stored in 'selectedTopic' 
+and 'setSelectedTopic' is the function that will be used to change the value
+of the selectedTopic. 
+
 The first value returned is the current data snapshot and the second value 
-is a function provided by react to update this value. 
+is a function provided by react to update this value in future. 
+
+With this in place our code inside App.jsx will be changed as follows:
+const [selectedTopic, setSelectedTopic] = useState('components');
+  
+function handleClick(selectedButton) {
+	setSelectedTopic(selectedButton);
+}
+
+and it will be displayed using:
+{selectedTopic}
+after the </menu> tag 
+
+Complete Example to change price upon button click:
+import {useState} from 'react';
+export default function App() {
+    const [price, setPrice]=useState('$100');
+    function changePrice(newPrice) {
+        setPrice(newPrice);
+    }
+    return (
+        <div>
+            <p data-testid="price">{price}</p>
+            <button onClick={()=>changePrice('$75')}>Apply Discount</button>
+        </div>
+    );
+}
+
+
+To load content dynamically on the tabs we have a new data.js file 
+for this project which has additional content on EXAMPLES object. 
+We can import this into our App.jsx like this: 
+
+import { CORE_CONCEPTS, EXAMPLES } from "./data.js";
+
+After the menu section we can load this by the below code:
+<div id="tab-content">
+	<h3>{EXAMPLES[selectedTopic].title}</h3>
+	<p>{EXAMPLES[selectedTopic].desciption}</p>
+	<pre>
+		<code>{EXAMPLES[selectedTopic].code}</code>
+	</pre>
+</div>
+
+Output content conditionally:
+----------------------------
+To output content conditionally only when the tab is selected 
+and nothing initially we will modify our code as below:
+const [selectedTopic, setSelectedTopic] = useState();
+    
+{!selectedTopic ? <p> Please select a content</p> : null}
+{selectedTopic ? (
+	<div id="tab-content">
+	  <h3>{EXAMPLES[selectedTopic].title}</h3>
+	  <p>{EXAMPLES[selectedTopic].desciption}</p>
+	  <pre>
+	    <code>{EXAMPLES[selectedTopic].code}</code>
+	  </pre>
+	</div>
+) : null}   
+
+or by using the below approach: (both yeild the same result)
+{!selectedTopic && <p> Please select a content</p>}
+{selectedTopic && (
+	<div id="tab-content">
+	  <h3>{EXAMPLES[selectedTopic].title}</h3>
+	  <p>{EXAMPLES[selectedTopic].desciption}</p>
+	  <pre>
+	    <code>{EXAMPLES[selectedTopic].code}</code>
+	  </pre>
+	</div>
+)}
+
+Dynamic styling:
+---------------
+On the TabButton component: (conditional isSelected - as an input parameter)
+<button className={isSelected ? 'active': undefined} onClick={onSelect}>
+	{children}
+</button>
+
+and on the TabButton in App.jsx to check the selected button name 
+that is set in handleClick with the selectedTopic name:
+<TabButton isSelected={selectedTopic==='components'} onSelect={()=>handleClick('components')}>Components</TabButton> 
 
 Note: in react component we need to add an attribute called 'className'
 instead of 'class' if we need to set a styling 
 
+
+Dynamic List:
+-------------
+From:
+<ul>
+	<CoreConcept {...CORE_CONCEPTS[0]}/>
+	<CoreConcept {...CORE_CONCEPTS[1]}/>
+	<CoreConcept {...CORE_CONCEPTS[2]}/>
+	<CoreConcept {...CORE_CONCEPTS[3]}/> 
+</ul>
+
+we can dynamically iterate CORE_CONCEPTS array like this: 
+<ul>
+	{CORE_CONCEPTS.map((conceptItem) => <CoreConcept {...conceptItem}/>)}
+</ul>
+
+But with this approach we have a warning in our dev console:
+Each child in a list should have a unique "key" prop
+
+To get rid of this warning we will add a unique 'key' tag which 
+identifies the component with a unique value. 
+{CORE_CONCEPTS.map((conceptItem) => <CoreConcept key={conceptItem.title} {...conceptItem}/>)}
+
+```
 
 ## Essentials - Deep Dive
 ```xml

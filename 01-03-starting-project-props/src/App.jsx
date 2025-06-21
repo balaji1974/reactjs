@@ -8,8 +8,9 @@ import { CORE_CONCEPTS } from "./data.js";
 
 
 function App() {
-  function handleClick() {
-    console.log("Tab clicked");
+  let tabContent = "Initial value";
+  function handleClick(selectedButton) {
+    tabContent=selectedButton;
   }
 
   return (  
@@ -28,11 +29,12 @@ function App() {
         <section id="examples">
           <h2>Examples</h2>
           <menu>
-            <TabButton onSelect={handleClick}>Components</TabButton>
-            <TabButton onSelect={handleClick}>JSX</TabButton>
-            <TabButton onSelect={handleClick}>Props</TabButton>
-            <TabButton onSelect={handleClick}>State</TabButton>
+            <TabButton onSelect={()=>handleClick('Components')}>Components</TabButton>
+            <TabButton onSelect={()=>handleClick('JSX')}>JSX</TabButton>
+            <TabButton onSelect={()=>handleClick('Props')}>Props</TabButton>
+            <TabButton onSelect={()=>handleClick('State')}>State</TabButton>
           </menu>
+          {tabContent}
         </section>
       </main>
     </div>
