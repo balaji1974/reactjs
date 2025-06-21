@@ -515,12 +515,10 @@ Download 01-02-start-project-components folder for inital project setup
 Copy it to 01-03-start-project-props 
 This will be our working project
 
-As usual go into the project folder and run the following command:
+Go into the project folder and run the following command:
 npm install
 npm run dev
 Go to -> http://localhost:5173/ to see the running application page
-
-
 
 Props:
 ------
@@ -532,6 +530,276 @@ input data to them.
 Eg. 
 function Welcome(props) {
   return <h1>Hello, {props.name}</h1>;
+}
+
+From our code in App.jsx we can first import an image 
+import componentsImg from "./assets/components.png"; 
+
+Next create a CoreConcepts component
+function CoreConcept(props) {
+  return (
+    <li>
+      <img src={props.image} alt={props.title}/>
+      <h3>{props.title}</h3>
+      <p>
+        {props.description}
+      </p>
+    </li>
+  );
+}
+
+Next use the component in our App component 
+function App() {
+  return (
+    <div>
+      <Header />
+      <main>
+        <section id="core-concepts">
+          <h2>Time to get started!</h2>
+          <ul>
+              <CoreConcept 
+                title="Components" 
+                description="The core UI builidng blocks"
+                image={componentsImg}
+              />
+            </ul>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+
+Reading data from array: 
+For this import data.js into your project. 
+This file import all images and it also has one array 
+called CORE_CONCEPTS which has it own data blocks. 
+
+The content of this file is: 
+import componentsImg from './assets/components.png';
+import propsImg from './assets/config.png';
+import jsxImg from './assets/jsx-ui.png';
+import stateImg from './assets/state-mgmt.png';
+
+export const CORE_CONCEPTS = [
+  {
+    image: componentsImg,
+    title: 'Components',
+    description:
+      'The core UI building block - compose the user interface by combining multiple components.',
+  },
+  {
+    image: jsxImg,
+    title: 'JSX',
+    description:
+      'Return (potentially dynamic) HTML(ish) code to define the actual markup that will be rendered.',
+  },
+  {
+    image: propsImg,
+    title: 'Props',
+    description:
+      'Make components configurable (and therefore reusable) by passing input data to them.',
+  },
+  {
+    image: stateImg,
+    title: 'State',
+    description:
+      'React-managed data which, when changed, causes the component to re-render & the UI to update.',
+  },
+];
+
+
+Import this named export CORE_CONCEPTS (not default export)
+import { CORE_CONCEPTS } from "./data.js"; // not default export and so it is inside brackets
+
+Read data from this import array as below in App component:
+
+<CoreConcept 
+	title={CORE_CONCEPTS[0].title} 
+	description={CORE_CONCEPTS[0].description}
+	image={CORE_CONCEPTS[0].image}
+/>
+
+Repeat this 4 times with incermental array index
+
+But we have a shorter alternative to send the data within the props using spread operator
+<CoreConcept {...CORE_CONCEPTS[0]}/> // Same as above and much concise
+
+We can now recieve the data in the component like bofore
+function CoreConcept(props) 
+or 
+function CoreConcept({image, title, description}) // by destructing resulting in slightly lesser code
+
+Restructuring the components to its own folders:
+-----------------------------------------------
+We can create a 'components' folder and add
+CoreConcept and Header components into its own file under this folder
+
+Make sure to create CoreConcept.jsx and Header.jsx and add their respective 
+components, their needed imports (after adjusting the path), removing them 
+from the App.jsx file and importing the two new components created into the 
+App.jsx file. 
+
+After this step we have 3 files which will look like this: 
+
+CoreConcept.jsx -> inside the components folder
+---------------
+function CoreConcept({image, title, description}) {
+  return (
+    <li>
+      <img src={image} alt={title}/>
+      <h3>{title}</h3>
+      <p>
+        {description}
+      </p>
+    </li>
+  );
+}
+
+export default CoreConcept;
+
+Header.jsx -> inside the components folder
+----------
+import reactImg from "../assets/react-core-concepts.png";
+
+const reactDescriptions = ['Fundamental', 'Crucial', 'Core'];
+
+function genRandomInt(max) {
+  return Math.floor(Math.random() * (max + 1));
+}
+
+function Header() {
+   const description = reactDescriptions[genRandomInt(2)];
+
+  return (
+    <header> 
+      <img src={reactImg} alt="Stylized atom" />
+      <h1>React Essentials</h1>
+      <p>
+        {description} React concepts you will need for almost any app you are
+        going to build!
+      </p>
+    </header>
+  );
+}
+
+export default Header;
+
+App.jsx
+-------
+import react from "react";
+import Header from "./components/Header.jsx";
+import CoreConcept from "./components/CoreConcept.jsx";
+
+import { CORE_CONCEPTS } from "./data.js";
+
+function App() {
+  return (
+    <div>
+      <Header />
+      <main>
+        <section id="core-concepts">
+          <h2>Time to get started!</h2>
+          <ul>
+            <CoreConcept {...CORE_CONCEPTS[0]}/>
+            <CoreConcept {...CORE_CONCEPTS[1]}/>
+            <CoreConcept {...CORE_CONCEPTS[2]}/>
+            <CoreConcept {...CORE_CONCEPTS[3]}/>  
+            </ul>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+export default App;
+
+Next, it is a common best practise to leave the styles (css files) relating to the components 
+that we develop near the file containing the component itself. So we remove header elements 
+from the index.css and create a new files inside the components folder and refactor it here. 
+Then make sure to add this file into Header.jsx component jsx file by importing it.
+import "./Header.css";
+
+We can now put the Header.jsx and Header.css files into its own folder under components 
+folder. This is just a personal best practise that we could follow and not a requirement. 
+After doing this, refactor the App.jsx and Header.jsx and adjust the imports accordingly 
+to the new folder structure. 
+
+Children
+--------
+props.childern will give us the data inbetween component tag.
+<TabContent>Data</TabContent> -> 
+{props.children} on the component -> will give 'Data'
+or 
+{children} will directly give 'Data' through object destructuring
+
+Create a new component called TabButton.jsx and add the below content.
+function TabButton({children}) {
+  return (
+    <li>
+        <button>
+            {children}
+        </button>
+
+    </li>
+  );
+}
+
+export default TabButton;
+
+Import this component into the App.jsx
+import TabButton from "./components/TabButton.jsx";
+
+This can be utilized in the App.jsx by creating a new section after the existing section:
+<section id="examples">
+	<h2>Examples</h2>
+	<menu>
+		<TabButton>Components</TabButton>
+		<TabButton>JSX</TabButton>
+		<TabButton>Props</TabButton>
+		<TabButton>State</TabButton>
+	</menu>
+</section>
+
+
+Handling Events
+---------------
+function export default TabButton({children}) {
+    function handleClick() {
+        console.log("Tab clicked:", children);
+    }
+    return (
+        <li>
+            <button onClick={handleClick}>
+                {children}
+            </button>
+
+        </li>
+    );
+}
+
+Note: Here we have function inside the function and will be 
+executed when we click the button. We are not calling the function 
+as {handleClick()} but making reactjs call the function by 
+enclosing it as {handleClick}. Otherwise it will be executed on the 
+component load itself and will not execute onClick. 
+
+To have our own click events on the TabButton move the 
+handleClick() function to the App.jsx.
+
+Next on the TabButton:
+<TabButton onSelect={handleClick}>Components</TabButton>
+
+Handle the onSelect inside the TabButton component as:
+function export default TabButton({children, onSelect}) {
+    return (
+        <li>
+            <button onClick={onSelect}>
+                {children}
+            </button>
+
+        </li>
+    );
 }
 
 
