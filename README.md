@@ -1020,8 +1020,17 @@ identifies the component with a unique value.
 ```
 
 ## Essentials - Deep Dive
+### Fragments
 ```xml
-Fragments:
+Download 01-04-start-project-states folder for inital project setup
+Copy it to 01-04-start-project-fragments
+This will be our working project
+
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
 React needs components to return single value and we usually warp all values in a div tag. 
 Eg. 
 return (
