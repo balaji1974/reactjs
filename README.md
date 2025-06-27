@@ -160,7 +160,7 @@ Operators
 - -> subtract 
 * -> multiply
 / -> division
-=== -> triple equal sign and is used to check equality and results in boolean 
+=== -> triple equal sign and is used to check strict equality (equality for both type and value) and results in boolean 
 >, <, >=, <=, != -> Comparison operators (greater than,  lesser than, greater than or equal to, lesser than or equal to and not equal to)
 
 
@@ -381,7 +381,7 @@ npm run dev -> To run the development server
 ```xml
 
 Download 01-01-starting-project folder for inital project setup
-Copy it to 01-02-start-project-components 
+Copy it to 01-02-starting-project-components 
 This will be our working project
 
 As usual go into the project folder and run the following command:
@@ -511,8 +511,8 @@ function Header() {
 
 ### Props 
 ```xml
-Download 01-02-start-project-components folder for inital project setup
-Copy it to 01-03-start-project-props 
+Download 01-02-starting-project-components folder for inital project setup
+Copy it to 01-03-starting-project-props 
 This will be our working project
 
 Go into the project folder and run the following command:
@@ -841,8 +841,8 @@ This can be achieved through state management.
 
 ### State and Hooks
 ```xml
-Download 01-03-start-project-props folder for inital project setup
-Copy it to 01-04-start-project-state 
+Download 01-03-starting-project-props folder for inital project setup
+Copy it to 01-04-starting-project-state 
 This will be our working project
 
 Go into the project folder and run the following command:
@@ -1020,10 +1020,11 @@ identifies the component with a unique value.
 ```
 
 ## Essentials - Deep Dive
-### Fragments
+
+### Fragments & Splitting Components
 ```xml
-Download 01-04-start-project-states folder for inital project setup
-Copy it to 01-04-start-project-fragments
+Download 01-04-starting-project-states folder for inital project setup
+Copy it to 02-01-starting-project-fragments
 This will be our working project
 
 Go into the project folder and run the following command:
@@ -1043,22 +1044,778 @@ return (
 but this extra div can sometimes cause additional rendering issues on the browser. 
 To avoid this React provides 2 options to wrap our mutiple tags that are returned. 
 
-We can use <Fragments> by first importing it using import {Fragments} from 'react';
-and then wrap it as <Fragments></Fragments> by replacing <div></div> or 
-use simply an empty tag <></> which will not cause any rendering issue on the browser 
+Option 1: 
+We can use <Fragments> by first importing it using: 
+import {Fragments} from 'react';
+and then wrap it as: 
+<Fragments></Fragments> by replacing <div></div> 
+
+Option 2:  
+Use simply an empty tag <></> which will not cause any rendering issue on the browser 
 
 
+Splitting Components: 
+--------------------
+For splitting we can find that App.jsx has CoreConcepts and Examples sections 
+which can be split into their seperate Components. 
+
+After the splitting and refactoring we have the final version of the 
+code in the 02-01-starting-project-fragments folder.
+
+```
+
+### Forwarding Props to inner elements
+```xml
+Download 02-01-starting-project-fragments folder for inital project setup
+Copy it to 02-02-starting-project-forwarding
+This will be our working project
+
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+Since we have 2 components Examples.jsx and CoreConcepts.jsx both 
+having the similar structure for <section> which contains <h2> and a body 
+under it, it makes sense to create a new component called Section which can 
+be degelated to this functionality. 
+
+But the only problem with this approach is not all properties of <Section> 
+are automatically forward to the component 'Section'. So we use the concept of 
+forwarding all the props using spread operation and then using object destructing 
+inside the component we can refer to all the remaining props that are set on the 
+<Section> tag.
+
+Eg. 
+In Examples.jsx
+<Section title="Examples" id="examples">
+	// all body elements here
+<Section>
+
+and in Section component we have: 
+function export default Section({title, children, ...props}) {
+    return (
+        <section {...props}>
+            <h2>{title}</h2>
+            {children}
+        </section>
+    );
+}
+
+Same can be applied for CoreConcepts.jsx 
+<Section title="Time to get started!" id="core-concepts">
+	// all body elements here
+<Section>
+
+Next we create a new component called Tabs:
+function export default Tabs({buttons, children}) {
+    return (
+        <>
+            <menu>
+                {buttons}
+            </menu>
+            {children}
+        </>
+    );
+}
+
+and in our Examples.jsx file we can use it to optimize our TabsButton
+import Tabs from "./Tabs.jsx";
+
+<Tabs buttons={
+    <>
+        <TabButton isSelected={selectedTopic==='components'} onSelect={()=>handleClick('components')}>Components</TabButton>
+        <TabButton isSelected={selectedTopic==='jsx'} onSelect={()=>handleClick('jsx')}>JSX</TabButton>
+        <TabButton isSelected={selectedTopic==='props'} onSelect={()=>handleClick('props')}>Props</TabButton>
+        <TabButton isSelected={selectedTopic==='state'} onSelect={()=>handleClick('state')}>State</TabButton>
+    </>
+}>
+    {!selectedTopic && <p> Please select a content</p>}
+    {selectedTopic && (
+        <div id="tab-content">
+            <h3>{EXAMPLES[selectedTopic].title}</h3>
+            <p>{EXAMPLES[selectedTopic].desciption}</p>
+            <pre>
+            <code>{EXAMPLES[selectedTopic].code}</code>
+            </pre>
+        </div>
+    )}
+</Tabs>
+
+To generalize the <menu> used inside the Tabs containter (as tomorrow 
+we may have another wrapper):
+function export default Tabs({buttons, children, buttonsContainer}) {
+    const ButtonsConainter = buttonsContainer;
+    return (
+        <>
+            <ButtonsConainter>
+                {buttons}
+            </ButtonsConainter>
+            {children}
+        </>
+    );
+}
+
+and in Examplex.jsx we can use it as 
+<Tabs 
+    buttonsContainer="menu"
+    buttons={
+       ....
+    }
+>
+
+Note: we can also pass our own customs component to be used as a wrapper like,
+buttonsContainer={CustomsWrapper}
+
+We can also set wrappers as default and not pass if from our Examples.jsx:
+function export default Tabs({buttons, children, buttonsContainer='menu'})
+
+and in our Examples.jsx - by default buttonsContainer will be menu as it is not passed
+<Tabs 
+    buttons={
+       ....
+    }
+>
+
+```
+
+## Advance Concepts
+
+### Components, State and two way binding with Tic-Tac-Toe
+```xml
+Download 03-01-tic-tac-toe-starting-project folder for inital project setup
+Copy it to 03-02-tic-tac-toe-starting-project-twowaybinding
+This will be our working project
+
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+Closer Look: public/ vs assets/ for Image Storage
+-------------------------------------------------
+The public/ Folder:
+You can store images in the public/ folder and then directly reference them 
+from inside your index.html or index.css files.
+
+The reason for that is that images (or, in general: files) stored in public/ 
+are made publicly available by the underlying project development server & build process. 
+Just like index.html, those files can directly be visited from inside the browser and 
+can therefore also be requested by other files.
+
+If you try loading localhost:5173/some-image.jpg, you'll be able to see that image 
+(if it exists in the public/ folder, of course).
+
+The src/assets/ Folder:
+You can also store images in the src/assets/ folder (or, actually, 
+anywhere in the src folder).
+
+So what's the difference compared to public/?
+
+Any files (of any format) stored in src (or subfolders like src/assets/) 
+are not made available to the public. They can't be accessed by website visitors. 
+If you try loading localhost:5173/src/assets/some-image.jpg, you'll get an error.
+
+Instead, files stored in src/ (and subfolders) can be used in your code files. 
+Images imported into code files are then picked up by the underlying build process, 
+potentially optimized, and kind of "injected" into the public/ folder right before 
+serving the website. Links to those images are automatically generated and 
+used in the places where you referenced the imported images.
+
+Which Folder Should You Use?
+You should use the public/ folder for any images that should not be handled by the 
+build process and that should be generally available. 
+Good candidates are images used directly in the index.html file or favicons.
+
+On the other hand, images that are used inside of components should typically 
+be stored in the src/ folder (e.g., in src/assets/).
 
 
+We first add static content under the body in index.html:
+<header>
+  <img src="game-logo.png" alt="Tic-Tac-Toe"></img>
+  <h1>Tic-Tac-Toe</h1>
+</header>
+
+
+Next create a Player.jsx inside a components folder:
+function export default Player({name, symbol}) {
+    return (
+        <li>
+            <span className='player'>
+              <span className='player-name'>{name}</span>
+              <span className='player-symbol'>{symbol}</span>
+            </span>
+            <button>Edit</button>
+          </li>
+    );
+}
+
+and use this in our App.jsx:
+import Player from './components/Player.jsx'
+
+function export default App() {
+  return (
+    <main>
+      <div id='game-container'>
+        <ol id='players'>
+          <Player name='Player1' symbol='X'></Player>
+          <Player name='Player2' symbol='O'></Player>
+        </ol>
+        GAME BOARD
+      </div>
+      LOG
+    </main>
+  )
+}
+
+
+Two way binding:
+---------------
+Two-way binding in React refers to the synchronization of data between a 
+component's state and a user interface element, typically an input field, 
+in both directions. This means: 
+State to UI:
+When the component's state changes, the UI element's value automatically 
+updates to reflect that new state.
+UI to State:
+When a user interacts with the UI element (e.g., typing in an input field), 
+the component's state automatically updates to reflect the new value from the UI.
+
+With this we change our Player.jsx file to reflect 2 way binding on playerName: 
+import {useState} from 'react';
+
+function export default Player({name, symbol}) {
+    const [playerName, setPlayerName] = useState(name);
+    const [isEditing, setIsEditing] = useState(false);
+    function handleEditClick() {
+        setIsEditing(isEditing => !isEditing);
+    }
+    function handleNameChange(event) {
+        setPlayerName(event.target.value);
+    }
+    return (
+        <li>
+            <span className='player'>
+              {!isEditing && <span className='player-name'>{playerName}</span>}
+              {isEditing && <input type='text' defaultValue={playerName} onChange={handleNameChange} required/>}  
+              <span className='player-symbol'>{symbol}</span>     
+            </span>
+            <button onClick={handleEditClick}>{isEditing? 'Save': 'Edit'}</button>
+          </li>
+    );
+}
+
+Another example for 2 way binding: 
+----------------------------------
+
+import React from 'react';
+
+import Review from './Review';
+
+// don't change the Component name "App"
+function export default App() {
+  const [textAreaValue, setTextAreaValue] = React.useState();
+  const [inputTextValue, setInputTextValue] = React.useState();
+  function handleInputTextValue(event) {
+      setInputTextValue(event.target.value);
+  }
+  function handleTextAreaValue(event) {
+      setTextAreaValue(event.target.value);
+  }
+  return (
+    <>
+      <section id="feedback">
+        <h2>Please share some feedback</h2>
+        <p>
+          <label>Your Feedback</label>
+          <textarea defaultValue={textAreaValue} onChange={handleTextAreaValue} />
+        </p>
+        <p>
+          <label>Your Name</label>
+          <input type="text" defaultValue={inputTextValue} onChange={handleInputTextValue} />
+        </p>
+      </section>
+      <section id="draft">
+        <h2>Your feedback</h2>
+
+        <Review student={inputTextValue} feedback={textAreaValue}/>
+
+        <p>
+          <button>Save</button>
+        </p>
+      </section>
+    </>
+  );
+}
+
+export default function Review({ feedback, student }) {
+  return (
+    <figure>
+      <blockquote>
+        <p>{feedback}</p>
+      </blockquote>
+      <figcaption>{student}</figcaption>
+    </figure>
+  );
+}
+
+Note: Please check passing event into the function 
+and getting the value from event.target.value
+
+```
+
+### Multi Dimensional List and State  
+```xml
+Download 03-02-tic-tac-toe-starting-project-twowaybinding folder for inital project setup
+Copy it to 03-03-tic-tac-toe-starting-project-state
+This will be our working project
+
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+Setting up the GameBoard:
+------------------------
+Create new component called GameBoard:
+const initialState = [
+    [null, null, null],
+    [null, null, null],
+    [null, null, null]
+];
+
+function export default GameBoard() {
+  return (
+    <ol id="game-board">
+        {initialState.map((row, rowIndex) => 
+            <li key={rowIndex} >
+                <ol>
+                    {row.map((playerSymbol, colIndex) => 
+                        <li key={colIndex}>
+                            <button>{playerSymbol}</button>
+                        </li>
+                    )}
+                </ol>
+            </li>
+        )}
+    </ol>
+  );
+}
+
+and use it in App.jsx below </ol>:
+<GameBoard/>
+
+Object State Immutability: 
+-------------------------
+In case of changing values in the Object (in our case Array)
+the best pracitise is to create a new object and assign values to it 
+rather than changing the values of the existing array (best practise
+in javascript). With this in place we introduce state in our GameBoard 
+component and introduce our object state immutability to our 
+initialState array. 
+
+function export default GameBoard() {
+  const [gameBoard, setGameBoard] = useState(initialState); // Create a copy of the initial state 
+  function handleButtonClick(rowIndex, colIndex) {
+    
+    setGameBoard((previousBoard) => {
+      const updatedBoard = [...previousBoard.map(innerArray => [...innerArray])]; // Create a deep copy of the board
+      updatedBoard[rowIndex][colIndex] = previousBoard[rowIndex][colIndex] = 'X' ;
+      return updatedBoard;
+    });
+  }
+  return (
+    <ol id="game-board">
+        {gameBoard.map((row, rowIndex) => 
+            <li key={rowIndex} >
+                <ol>
+                    {row.map((playerSymbol, colIndex) => 
+                        <li key={colIndex}>
+                            <button onClick={()=> handleButtonClick(rowIndex,colIndex)}>{playerSymbol}</button>
+                        </li>
+                    )}
+                </ol>
+            </li>
+        )}
+    </ol>
+  );
+}
+
+Lifting the state up:
+--------------------
+If more than one components need to share the same state, lift the state up
+to the closest ancestor component that has access to all components 
+that needs to work with the state. 
+
+In our App.jsx we will set activePlayer state and toggle between two states 
+when the box is selected on the GameBoard. Along with this we also pass the 
+current active player symbol to be set on the GameBoard.  
+We also pass this state to the Player component to set the highlight based 
+on the active player. 
+
+function export default App() {
+  const [activePlayer, setActivePlayer] = useState('X');
+  
+  function handleSelectSquare() {
+    setActivePlayer(activePlayer => {
+      return activePlayer === 'X' ? 'O' : 'X'});
+  }
+
+  return (
+    <main>
+      <div id='game-container'>
+        <ol id='players' className='highlight-player'>
+          <Player name='Player1' symbol='X' isActive={activePlayer==='X'}></Player>
+          <Player name='Player2' symbol='O' isActive={activePlayer==='O'}></Player>
+        </ol>
+        <GameBoard onSelectSquare={handleSelectSquare} activePlayerSymbol={activePlayer}/>
+      </div>
+      LOG
+    </main>
+  )
+}
+
+GameBoard.jsx
+function GameBoard({onSelectSquare, activePlayerSymbol}) {
+.....
+	function handleButtonClick(rowIndex, colIndex) {
+        setGameBoard((previousBoard) => {
+	      const updatedBoard = [...previousBoard.map(innerArray => [...innerArray])]; // Create a deep copy of the board
+	      updatedBoard[rowIndex][colIndex] = previousBoard[rowIndex][colIndex] = activePlayerSymbol; 
+	      return updatedBoard;
+	    });
+	    onSelectSquare();
+  }
+}
+
+Player.jsx
+function Player({name, symbol, isActive}) {
+	....
+
+	return (
+        <li className={isActive ? 'active' : undefined}>  
+        ......
+    );
+}
+
+```
+
+### Components, State and two way binding with Tic-Tac-Toe (Continued......)
+```xml
+Download 03-03-tic-tac-toe-starting-project-state folder for inital project setup
+Copy it to 03-04-tic-tac-toe-starting-project-props
+This will be our working project
+
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+Working on displaying the log 
+-----------------------------
+To display log we need to once again lift state up and move out our 
+state management from GameBoard to App.jsx as we need both turns and 
+its log at the same time in the App.jsx for us to keep updating our state.
+
+For this we need to modifiy our App.jsx and GameBoard.jsx like: 
+App.jsx:
+function export default App() {
+  const [activePlayer, setActivePlayer] = useState('X');
+  const [gameTurns, setGameTurns] = useState([]);
+
+  function handleSelectSquare(rowIndex, colIndex) {
+    setActivePlayer((currActivePlayer) => currActivePlayer === 'X' ? 'O' : 'X');
+    setGameTurns((previousTurns) => {
+      let currPlayer = 'X';
+      if(previousTurns.length>0 && previousTurns[0].player === 'X') {
+        currPlayer = 'O';
+      }
+      
+      const updateTurns = [
+        {
+          square: {row: rowIndex, col: colIndex}, 
+          player: currPlayer
+        }, 
+        ...previousTurns];
+      return updateTurns;
+    });
+
+  }
+
+  return (
+    <main>
+      <div id='game-container'>
+        <ol id='players' className='highlight-player'>
+          <Player name='Player1' symbol='X' isActive={activePlayer==='X'}></Player>
+          <Player name='Player2' symbol='O' isActive={activePlayer==='O'}></Player>
+        </ol>
+        <GameBoard 
+          onSelectSquare={handleSelectSquare} 
+          turns={gameTurns}
+        />
+      </div>
+      <Log/>
+    </main>
+  )
+}
+
+GameBoard.jsx: 
+function export default GameBoard({onSelectSquare, turns}) {
+  // comment all the below existing code 
+  // const [gameBoard, setGameBoard] = useState(initialState);
+  
+  // function handleButtonClick(rowIndex, colIndex) {
+  //   setGameBoard((previousBoard) => {
+  //     // Create a deep copy of the previous board to avoid mutating state directly 
+  //     // and to ensure React can detect changes
+  //     const updatedBoard = [...previousBoard.map(innerArray => [...innerArray])]; // Create a deep copy of the board
+  //     updatedBoard[rowIndex][colIndex] = previousBoard[rowIndex][colIndex] = activePlayerSymbol;
+  //     return updatedBoard;
+  //   });
+  //   onSelectSquare();
+  // }
+
+  let gameBoard = [...initialBoard.map(row => [...row])]; // deep copy of the initial board
+  for(const turn of turns) {
+    const {square, player} = turn;
+    const {row, col} = square;
+    gameBoard[row][col] = player;
+  }
+
+  return (
+    <ol id="game-board">
+        {gameBoard.map((row, rowIndex) => 
+            <li key={rowIndex} >
+                <ol>
+                    {row.map((playerSymbol, colIndex) => 
+                        <li key={colIndex}>
+                            <button onClick={() => onSelectSquare(rowIndex, colIndex)}>{playerSymbol}</button>
+                        </li>
+                    )}
+                </ol>
+            </li>
+        )}
+    </ol>
+  );
+}
+
+With this we are now read to pass our turns to display the log.
+function export default Log({turns}) {
+    return (
+        <ol id='log'>
+            {turns.map((turn) => 
+                <li key={`${turn.square.row}${turn.square.col}`}> 
+                    {turn.player} selected {turn.square.row} , {turn.square.col}
+                </li>
+            )}
+        </ol>
+    );
+}
+
+and our log in App.jsx must send the turns to this component:
+<Log turns={gameTurns}/>
+
+One more optimization on App.jsx is we can already get our
+activePlayer from gameturns state and hence managing 2 states here 
+is not needed. So we can change our code by creating a new funcion like
+below and calling this in 2 places inside the App() function and also 
+disabling the state management of activePlayer. 
+
+function deriveActvePlayer(turns) {
+  let currPlayer = 'X';
+  if(turns.length>0 && turns[0].player === 'X') {
+    currPlayer = 'O';
+  }
+  return currPlayer;
+}
+
+function App() {
+  // const [activePlayer, setActivePlayer] = useState('X');
+  const [gameTurns, setGameTurns] = useState([]);
+  const activePlayer = deriveActvePlayer(gameTurns);
+
+  function handleSelectSquare(rowIndex, colIndex) {
+    //setActivePlayer((currActivePlayer) => currActivePlayer === 'X' ? 'O' : 'X');
+    setGameTurns((previousTurns) => {
+      let currPlayer = deriveActvePlayer(previousTurns);
+      const updateTurns = [
+        {
+          square: {row: rowIndex, col: colIndex}, 
+          player: currPlayer
+        }, 
+        ...previousTurns];
+      return updateTurns;
+    });
+
+  }
+  .......
+}
+
+To prevent the button from being clicked twice, in the 
+GameBoard.jsx disable the button if it has either X or O 
+<button 
+  onClick={() => onSelectSquare(rowIndex, colIndex)}
+  disabled={playerSymbol!=null} // Disable button if already occupied
+>
+  {playerSymbol}
+</button>
+
+Selecting the winning combinations:
+Add the winning comibination js file to your project by adding it 
+to your project source directory and importing it in the App.jsx 
+import { WINNING_COMBINATIONS } from './winning-combinations.js';
+
+For displaying the game result and setting the draw or 
+win in App.jsx add the following:
+let winner;
+for(const combination of WINNING_COMBINATIONS) {
+	const [first, second, third] = combination;
+	const firstSymbol = gameBoard[first.row][first.column];
+	const secondSymbol = gameBoard[second.row][second.column];
+	const thirdSymbol = gameBoard[third.row][third.column];
+
+	if(firstSymbol && firstSymbol === secondSymbol && firstSymbol === thirdSymbol) {
+	  winner = firstSymbol;
+	  console.log(`Player ${firstSymbol} wins!`);
+	}
+}
+
+const hasDraw = gameTurns.length === 9 && !winner; 
+
+and set the below line just above the GameBoard component in App.jsx:
+{ (winner || hasDraw) && <GameOver winner={winner} onRestart={handleRestartGame}/> }
+
+Create a handleRestartGame function in App.jsx
+function handleRestartGame() {
+	setGameTurns([]);
+} 
+
+Create the GameOver component in the file GameOver.jsx:
+function export default GameOver({winner, onRestart}) {
+    return (
+        <div id="game-over">
+            <h2>Game Over</h2>
+            {winner && <p>{winner} won !</p>}
+            {!winner && <p>It's a draw!</p>}
+            <p><button onClick={onRestart}>Play Again</button></p>
+        </div>
+    );
+}
+
+and import the GameOver component in App.jsx
+import GameOver from './components/GameOver.jsx';
+
+Setting the player name on winning must be done not by brining 
+the player name outside the Player component as this would mean 
+that the player name gets re-evaluated on every key strock which is 
+not ideal. So we need to handle this state from App.jsx by the below 
+change in code:
+
+Create a new state to handle this:
+const [players,setPlayers] = useState(
+    {
+      'X': 'Player 1',
+      'O': 'Player 2'
+    }
+  )
+
+Create a function:
+function handlePlayerNameChange(symbol, newName) {
+	setPlayers(prevPlayers => {
+	  return {
+	    ...prevPlayers,
+	    [symbol]: newName 
+	  };
+	})
+}
+
+Set the Player components to call this function:
+<Player 
+	name='Player1' 
+	symbol='X' 
+	isActive={activePlayer==='X'}
+	onNameChange={handlePlayerNameChange}
+>
+
+
+and change the Player.jsx to handle this:
+function export default Player({name, symbol, isActive, onNameChange}) {
+    .....
+    function handleEditClick() {
+        setIsEditing((editing) => !editing);
+        if(isEditing) onNameChange(symbol, playerName);
+    }
+    ......
+}
+
+Finally clean up the App.jsx file: 
+Create a derive winner function and move this activity outside of App function:
+function deriveWinner(gameBoard, players) {
+  let winner;
+  for(const combination of WINNING_COMBINATIONS) {
+    const [first, second, third] = combination;
+    const firstSymbol = gameBoard[first.row][first.column];
+    const secondSymbol = gameBoard[second.row][second.column];
+    const thirdSymbol = gameBoard[third.row][third.column];
+
+    if(firstSymbol && firstSymbol === secondSymbol && firstSymbol === thirdSymbol) {
+      winner = players[firstSymbol];
+      console.log(`${winner} wins!`);
+    }
+  }
+  return winner;
+}
+
+Also create a derive game board function and move this activity outside of App function:
+function deriveGameBoard(gameTurns) {
+  let gameBoard = [...initialBoard.map(row => [...row])]; // deep copy of the initial board
+  for(const turn of gameTurns) {
+    const {square, player} = turn;
+    const {row, col} = square;
+    gameBoard[row][col] = player;
+  }
+  return gameBoard;
+}
+
+Also rename intialGameBoard to INITIAL_GAME_BOARD
+and create PLAYERS const as 
+const PLAYERS = {
+  'X': 'Player 1',
+  'O': 'Player 2'
+}
+
+and use it instead of ...initialGameBoard 
+and setting players state and in the player tag for setting inital value of players. 
+
+With this the game tic-tac-toe is complete and optimized. 
 
 ```
 
 ### Reference
 ```xml
-https://www.youtube.com/watch?v=9Crrhz0pm8s
+freeCodeCamp.org. (2024b, December 17). 
+Spring AI Full Course with Projects – Build Smarter Spring Boot Applications [Video]. 
+YouTube. https://www.youtube.com/watch?v=9Crrhz0pm8s
+
+React Reference Overview – React. (n.d.). 
 https://react.dev/reference/react
+
+Getting started. (n.d.). Vitejs. 
 https://vite.dev/guide/
 
+Maximilian Schwarzmüller
+React - The Complete Guide 2025 (incl. Next.js, Redux). Udemy. 
 https://www.udemy.com/course/react-the-complete-guide-incl-redux/
+
+Academind. (n.d.). 
+GitHub - academind/react-complete-guide-course-resources: 
+React - The Complete Guide Course Resources (Code, Attachments, Slides). GitHub. 
 https://github.com/academind/react-complete-guide-course-resources
+
+freeCodeCamp.org. 
+(2024, November 20). 
+Learn React JS - full beginner’s tutorial & practice projects [Video]. 
+YouTube. https://www.youtube.com/watch?v=x4rFhThSX04
+
 ```
