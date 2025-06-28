@@ -1792,6 +1792,271 @@ With this the game tic-tac-toe is complete and optimized.
 
 ```
 
+## Practising what you have learnt so far - Investment calculator
+```xml
+Download 04-starting-project folder for inital project setup
+Copy it to 04-starting-project-practise
+This will be our working project
+
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+Adding a header component:
+--------------------------
+Create a file called Header.jsx inside the components folder
+and add its contents as below: 
+
+import logo from '../assets/investment-calculator-logo.png';
+function export default Header() {
+    return  (
+        <header id='header'>
+            <img src={logo} alt='logo'/>
+            <h1>React Investment Calculator</h1>
+
+        </header>
+    );
+}
+
+and in App.jsx add the Header component: 
+import Header from './components/Header';
+
+function export default App() {
+  return (
+    <Header />
+  );
+}
+
+Creating the user input component: 
+----------------------------------
+Create a file called UserInput.jsx inside the components folder
+and add its contents as below:
+import { useState } from 'react';
+
+export default function UserInput() {
+  const [userInput, setUserInput] =useState({
+    initialInvestment: 10000,
+    annualInvestment: 1000,
+    expectedReturn: 6,
+    duration: 10
+  });
+
+  function handleInputChange(inputIdentifier, newValue) {
+    setUserInput((prevState) => {
+      return {
+        ...prevState,
+        [inputIdentifier]: newValue
+      };
+    });
+  }
+
+  return (
+    <section id='user-input'> 
+        <div className='input-group'>
+            <p> 
+                <label>Initial Investment</label>
+                <input type="number" 
+                    required 
+                    value={userInput.initialInvestment}
+                    onChange={(event)=>handleInputChange('initialInvestment', event.target.value)}
+                />
+            </p>
+            <p> 
+                <label>Annual Investment</label>
+                <input type="number" 
+                    required 
+                    value={userInput.annualInvestment}
+                    onChange={(event)=>handleInputChange('annualInvestment', event.target.value)}
+                />
+            </p>
+        </div>
+        <div className='input-group'>
+            <p> 
+                <label>Expected Return</label>
+                <input type="number" 
+                    required 
+                    value={userInput.expectedReturn}
+                    onChange={(event)=>handleInputChange('expectedReturn', event.target.value)}
+                />
+            </p>
+            <p> 
+                <label>Duration</label>
+                <input type="number" 
+                    required 
+                    value={userInput.duration}
+                    onChange={(event)=>handleInputChange('duration', event.target.value)}
+                />
+            </p>
+        </div>
+    </section>
+  );
+}
+
+and in App.jsx add the UserInput component: 
+import Header from './components/Header';
+import UserInput from './components/UserInput';
+
+export default function App() {
+  return (
+    <>
+       <Header />
+       <UserInput />
+    </>
+    
+  );
+}
+
+Lifting the State Up:
+---------------------
+We need to show the Result in a new component and both UserInput 
+and Result need the same set of values. So instead of having our state 
+set in UserInput component we can move the state to App component so  
+that it an be shared with both UserInput and Result component that we are 
+trying to add newly to display our results. 
+
+Results.jsx:
+export default function Results({userInput}) {
+    console.log(userInput);
+    return (
+       <p>Results....</p> 
+    );
+}
+
+UserInput.jsx after moving state up:
+function export default UserInput({onChange, userInput}) {
+  return (
+    <section id='user-input'> 
+        <div className='input-group'>
+            <p> 
+                <label>Initial Investment</label>
+                <input type="number" 
+                    required 
+                    value={userInput.initialInvestment}
+                    onChange={(event)=>onChange('initialInvestment', event.target.value)}
+                />
+            </p>
+            <p> 
+                <label>Annual Investment</label>
+                <input type="number" 
+                    required 
+                    value={userInput.annualInvestment}
+                    onChange={(event)=>onChange('annualInvestment', event.target.value)}
+                />
+            </p>
+        </div>
+        <div className='input-group'>
+            <p> 
+                <label>Expected Return</label>
+                <input type="number" 
+                    required 
+                    value={userInput.expectedReturn}
+                    onChange={(event)=>onChange('expectedReturn', event.target.value)}
+                />
+            </p>
+            <p> 
+                <label>Duration</label>
+                <input type="number" 
+                    required 
+                    value={userInput.duration}
+                    onChange={(event)=>onChange('duration', event.target.value)}
+                />
+            </p>
+        </div>
+    </section>
+  );
+}
+
+And our App.jsx with the state move here:
+export default function App() {
+  const [userInput, setUserInput] =useState({
+    initialInvestment: 10000,
+    annualInvestment: 1200,
+    expectedReturn: 6,
+    duration: 10
+  });
+
+  function handleInputChange(inputIdentifier, newValue) {
+    setUserInput((prevState) => {
+      return {
+        ...prevState,
+        [inputIdentifier]: newValue
+      };
+    });
+  }
+
+  return (
+    <>
+       <Header />
+       <UserInput onChange={handleInputChange} userInput={userInput} />
+       <Results userInput={userInput} />
+    </>
+    
+  );
+}
+
+
+Outputtig the results:
+----------------------
+Results.jsx:
+import {calculateInvestmentResults, formatter} from '../util/investment.js';
+
+export default function Results({userInput}) {
+    const resultsData=calculateInvestmentResults(userInput);
+    const initialInvestment = resultsData[0].valueEndOfYear - resultsData[0].interest - resultsData[0].annualInvestment;
+    console.log(resultsData);
+    return (
+       <table id='result'>
+            <tr>
+                <th>Year</th>
+                <th>Investment Value</th>
+                <th>Intrest (Year)</th>
+                <th>Total Interest</th>
+                <th>Invested Capital</th>
+            </tr>
+            <tbody>
+                {resultsData.map(yearData => {
+                    const totalInterest = yearData.valueEndOfYear - yearData.annualInvestment * yearData.year - initialInvestment;
+                    const totalAmountInvested = yearData.valueEndOfYear - totalInterest;
+                    return <tr key={yearData.year}> 
+                        <td>{yearData.year}</td>
+                        <td>{formatter.format(yearData.valueEndOfYear)}</td>
+                        <td>{formatter.format(yearData.interest)}</td>
+                        <td>{formatter.format(totalInterest)}</td>
+                        <td>{formatter.format(totalAmountInvested)}</td>
+                    </tr>
+                })}
+            </tbody>
+       </table> 
+    );
+}
+
+And to make sure that 0 or negative values are not entered in UserInput, in the 
+App.jsx add the following validation:
+const inputIsValid = userInput.duration>=1;
+
+and conditionally output the results:
+{!inputIsValid && <p className='center'>Please enter a duration greater than zero</p>}
+{inputIsValid && <Results userInput={userInput} />}
+
+
+```
+
+## Styling React Components
+```xml
+Download 05-01-starting-project folder for inital project setup
+Copy it to 05-01-starting-project-styling
+This will be our working project
+
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+
+
+```
+
 ### Reference
 ```xml
 freeCodeCamp.org. (2024b, December 17). 
