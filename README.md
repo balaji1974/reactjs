@@ -2045,7 +2045,7 @@ and conditionally output the results:
 ## Styling React Components
 ```xml
 Download 05-01-starting-project folder for inital project setup
-Copy it to 05-01-starting-project-styling
+Copy it to 05-02-starting-project-styling
 This will be our working project
 
 Go into the project folder and run the following command:
@@ -2188,7 +2188,17 @@ component called CustomInput in this file, combining both components together.
 
 ## Tailwind CSS
 ```xml
+Download 05-02-starting-project-styling folder for inital project setup
+Copy it to 05-03-starting-project-tailwind
+This will be our working project
 
+Go into the project folder and run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+Install Tailwind:
+npm install tailwindcss @tailwindcss/vite
 
 
 ```
@@ -2218,5 +2228,9 @@ freeCodeCamp.org.
 (2024, November 20). 
 Learn React JS - full beginner’s tutorial & practice projects [Video]. 
 YouTube. https://www.youtube.com/watch?v=x4rFhThSX04
+
+Installing with Vite - Installation. (n.d.). 
+Tailwind CSS. 
+https://tailwindcss.com/docs/installation/using-vite
 
 ```
