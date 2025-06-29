@@ -2053,6 +2053,142 @@ npm install
 npm run dev
 Go to -> http://localhost:5173/ to see the running application page
 
+When using vanilla (regular) CSS, it is not scoped to any particular 
+component and the scope is global. 
+
+
+Inline style in JSX code:
+<p style={{color: 'red' textAlign: 'left'}}>
+
+Conditional Inline style:
+<input type='email' style={{backgroundColor: emailNotValid ? 'red': 'green'}} />
+
+Conditional Inline style along with static styling: (use templating script)
+<label className={`label ${emailNotValid? 'invalid': ''}`}> 
+
+Exercise:
+---------
+Your task is to help out a colleague and style a h1 element dynamically (with inline styles) 
+depending on which button was pressed.
+If the "Yes" button is pressed, the h1 element should receive color: "green" as an inline style. 
+If the "No" button is pressed, color: "red" should be applied.
+Initially, when no button has been clicked yet, the color should be set to "white".
+Important: You must use these specific colors ("green", "red", "white") - 
+don't use any hex code or slight variations of these colors!
+
+import {useState} from 'react';
+function export default App() {
+    const [buttonColor, setButtonColor] = useState('white');
+    function handleButtonClick(color) {
+        setButtonColor(color);
+    }
+    return (
+    <div id="app">
+      <h1 style={{color : buttonColor}}>CSS is great!</h1>
+      <menu>
+        <li>
+          <button onClick={()=> handleButtonClick('green')}>Yes</button>
+        </li>
+        <li>
+          <button onClick={()=> handleButtonClick('red')}>No</button>
+        </li>
+      </menu>
+    </div>
+  );
+}
+
+CSS Modules:
+------------
+This allows us to write Vanilla CSS but scoped to a particular component.
+If we have a CSS file named Header.module.css 
+then this indicate that this file will be included in the build process.
+
+It will then be imported in our component as:
+import {styles} from './Components/Header.module.css'
+
+and this will be used in the component like:
+<p className={styles.para}> Test </p>
+
+
+Style components package:
+-------------------------
+Using this we can create our own style component package that can be applied to a 
+particular Component. 
+
+Add this to the project by running the command locally in your project folder:
+npm install styled-components 
+
+and then restart the server.
+
+Next in our AuthInput.jsx add the following:
+
+import { styled } from 'styled-components';
+
+const ControlledContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+`;
+
+Next use it in the same file, by replacing an existing <div></div>
+as <ControlledContainer></ControlledContainer>
+
+Note: styled.div will become a <div></div> during rendering and changing it 
+to styled.p will render it as a <p></p>
+
+Check AuthInput.jsx for more sample style components.
+
+
+
+Conditional Styling:
+const emailNotValid = submitted && !enteredEmail.includes('@');
+<Label $invalid={passwordNotValid}>Password</Label>
+
+and for conditional styling:
+const Label = styled.label`
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:${({$invalid}) => $invalid ? '#f87171' : '#6b7280'};
+`
+
+Note: Since 'invalid' is a default built in prop, we need to use $ before it 
+to indicate that we are not reffering to this default prop. Otherwise $ can be 
+omittied.
+
+Check StyledHeader in Header.jsx
+and Button in AuthInputs.jsx
+Note: use & for sub styles for eg. 
+.button:hover {
+  background-color: #f0920e;
+}
+will be expressed as below as sub-element inside the Button constant: 
+const Button = styled.button`
+	padding: 1rem 2rem;
+	font-weight: 600;
+	......
+	&:hover {
+	  background-color: #f0920e;
+	}
+`
+
+Splitting Button and Input into seperate components:
+----------------------------------------------------
+Move the Button component created in the AuthInputs.jsx to a seperate
+file Button.jsx and use it within AuthInputs.jsx 
+
+Move Label and Input component into Input.jsx and create a combined 
+component called CustomInput in this file, combining both components together. 
+
+```
+
+## Tailwind CSS
+```xml
+
 
 
 ```
