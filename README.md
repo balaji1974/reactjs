@@ -2192,14 +2192,121 @@ Download 05-02-starting-project-styling folder for inital project setup
 Copy it to 05-03-starting-project-tailwind
 This will be our working project
 
-Go into the project folder and run the following command:
+Go into the project folder and run the following command to Install Tailwind:
+npm install tailwindcss @tailwindcss/vite
+
+Configure the Vite plugin
+Add the @tailwindcss/vite plugin to your Vite configuration.
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+  ],
+})
+
+in our case the file looks like below after adding tailwind:
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+    react()
+  ],
+  
+})
+
+Import Tailwind CSS
+Add an @import to your CSS file that imports Tailwind CSS.
+@import "tailwindcss";
+(in our case we renamed the existing css file to old and created 
+a new file with just the above line, saved it to index.css 
+before running the below command)
+
+In the project folder, run the following command:
 npm install
 npm run dev
 Go to -> http://localhost:5173/ to see the running application page
 
-Install Tailwind:
-npm install tailwindcss @tailwindcss/vite
+Also remove the previously added css components from Header.jsx,
+and change the <StyledHeader> back to <header>
 
+Next if you are using Visual Studio Code, then install the 
+"Tailwind CSS Intelisense" extension for autocode complete.
+
+Adding tailwind to our Header.jsx:
+<header className='flex flex-col items-center mt-8 mb-16'>
+  <img src={logo} alt="A canvas" className='mb-8 w-44 h-44 object-contain'/>
+  <h1 className='text-4xl font-semibold tracking-widest text-center uppercase text-amber-800'>ReactArt</h1>
+  <p className='text-stone-500'>A community of artists and art-lovers.</p>
+</header>
+
+Adding a new font:
+in the index.css do the following:
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
+@theme {
+  --font-pacifico: "Pacifico", 'cursive'; 
+}
+
+Now we can use the font in the Header.jsx:
+<h1 className='text-4xl font-semibold tracking-widest text-center uppercase text-amber-800 font-pacifico'>ReactArt</h1>
+
+Applying defaults as per screen size: 
+<header className='flex flex-col items-center mt-8 mb-8 md:mb-16'>
+This will apply mb-8 and only apply mb-16 for medium size screens
+
+<h1 className='text-xl md:text-4xl font-semibold tracking-widest text-center uppercase text-amber-800 font-pacifico'>ReactArt</h1>
+Here we have text-xl md:text-4xl
+This will apply text-xl and if the screen size is medium then it will apply the text-4xl 
+
+We can apply similar styles to Button.jsx 
+function export default Button({children, ...props}) {
+    return (
+        <button className='px-4 py-2 font-semibold uppercase rounded-b-sm text-stone-900 bg-amber-400 hover:bg-amber-500' {...props}>{children}</button>
+    );
+}
+
+Next we can change our input class as below:
+function export default Input({label, invalid, ...props}) {
+    let labelClass = 'block mb-2 text-xs font-bold tracking-wide uppercase';
+    let textClass = 'w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow';
+
+    if(invalid) {
+      labelClass += ' text-red-400';  
+      textClass +=' bg-stone-400';
+    }
+    else {
+      labelClass += ' text-stone-300';
+      textClass +=' bg-stone-300';
+    }
+
+    return <p>
+      <label className={labelClass}>{label}</label>
+      <input className={textClass} {...props} />
+    </p>
+}
+
+Next we change our AuthInputs.jsx file:
+<div id="auth-inputs" className='w-full max-w-sm p-8 mx-auto rounded shadow-md bg-gradient from-stone-700 to-stone-800'>
+<button type="button" className='text-amber-400 hover:text-amber-500'>
+
+
+```
+
+## Debugging React Apps
+```xml
+Download 06-01-starting-project folder for inital project setup
+Copy it to 06-02-starting-project-debugging
+This will be our working project
+
+In the project folder, run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
 
 ```
 
