@@ -2308,6 +2308,109 @@ npm install
 npm run dev
 Go to -> http://localhost:5173/ to see the running application page
 
+Debugging 1: 
+------------
+If we run the application everything will work fine until we enter a negative value 
+for the duration. 
+
+If we go to our developer console and check we get the below error: 
+Uncaught TypeError: Cannot read properties of undefined (reading 'valueEndOfYear')
+    at Results (Results.jsx:10:16)
+    at react-stack-bottom-frame (react-dom_client.js?v=3f728218:17676:20)
+    at renderWithHooks (react-dom_client.js?v=3f728218:4319:24)
+    at updateFunctionComponent (react-dom_client.js?v=3f728218:6757:21)
+    at beginWork (react-dom_client.js?v=3f728218:7803:20)
+    at runWithFiberInDEV (react-dom_client.js?v=3f728218:1538:72)
+    at performUnitOfWork (react-dom_client.js?v=3f728218:11057:98)
+    at workLoopSync (react-dom_client.js?v=3f728218:10914:11)
+    at renderRootSync (react-dom_client.js?v=3f728218:10896:15)
+    at performWorkOnRoot (react-dom_client.js?v=3f728218:10537:46)
+
+
+For the exception thrown it is pretty obvious that the error is in valueEndOfYear
+in the results component. 
+If we further look it shows that the line of the error as line no.10 
+
+If we further check, we will know from the calculateInvestmentResults has 
+a loop based on duration that will never get executed if the duration is less than 0
+
+To fix this error, just after the calculateInvestmentResults is run, we will introduce 
+a check to see if the results array gets values and if not we will display an error msg.
+if(results.length===0) {
+  return <p className="center">Invalid input entered </p>;
+}
+
+Debugging 2:
+------------
+If the inital investment is set as 15000 then the results displayed shows wierd values,
+which must now be fixed. This does not show any error message on the debug console.
+
+For debugging on the browser, in the developer console, go to the source tab -> Page
+Here you will get a similar folder structure like our source code. 
+Just go to the file you want to debug, in our case App.jsx which will open the source 
+code on the right hand side tab.
+
+Here we can click on the side to set the debug breakpoint and then inspect our result.
+In our case we can clearly see that the "newvalue" that comes into this function is a 
+string which performs string concat and not numerical arithmatic. 
+
+To fix this, the entered newvalue in the handleChange function in App.jsx must be converted 
+from string to numeric which can be achieved by changing the string to number as below by
+using the Unary Plus Operator (+)
++newValue
+
+Debugging 3:
+------------
+To simulate this error, make a change in Results.jsx by moving the results array outside of 
+of the Results function like below: 
+
+const results = [];
+export default function Results({ input }) {
+  ......
+}
+
+Now if we make any changes in the initial investment the results get appended (longer and longer)
+and on the console we will see some new errors like below:
+Encountered two children with the same key, `8`. 
+Keys should be unique so that components maintain their identity across updates. 
+Non-unique keys may cause children to be duplicated and/or omitted — the behavior 
+is unsupported and could change in a future version.
+
+This error will never surface until we enter a new value in our App. To identify this 
+error during application start up, do the following in our index.jsx
+import { StrictMode } from 'react';
+ReactDOM.createRoot(document.getElementById('root')).render(
+    <StrictMode><App /></StrictMode>  
+);
+
+This will execute each and every component twice in development and this error will become 
+immediately obvious. 
+
+To fix this, we must reinitize 
+const results = [] 
+every time the component get reexecuted and do we need to move it back inside Results function.
+
+So with stict mode we cannot indetify the error but will enable us to reexucte each component 
+twice which will help us indentify bugs like this. 
+
+
+Debugging 4:
+------------
+Install the React Developer Tool from your browser as extension tool. 
+For chrome you can get it from the below link or search for Chrome Developer tool extension:
+https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi
+
+Add this to your browser. 
+With this installed, now in the developer tool, in the main tab you will find 2 new additions:
+Profiler 
+Components
+
+In the components tab you will now see all your React Components, along with their state and hooks. 
+Note: we will see Profiler tab later
+
+
+
+
 ```
 
 ### Reference
