@@ -2409,9 +2409,136 @@ In the components tab you will now see all your React Components, along with the
 Note: we will see Profiler tab later
 
 
+```
+
+
+## Refs & Portals
+```xml
+Download 07-01-starting-project folder for inital project setup
+Copy it to 07-02-starting-project-refs
+This will be our working project
+
+In the project folder, run the following command:
+npm install
+npm run dev
+Go to -> http://localhost:5173/ to see the running application page
+
+To set the value of a h2 on button click we need to write the following code:
+export default function Player() {
+  const [name, setName]=useState('');
+  const [submitted, setSubmitted]=useState(false);
+  function handleNameChange(event) {
+    setSubmitted(false);
+    setName(event.target.value);
+  }
+  function handleClick() {
+    setSubmitted(true);
+  }
+  return (
+    <section id="player">
+      <h2>Welcome {submitted ? name:'unknown'} </h2>
+      <p>
+        <input type="text" onChange={handleNameChange} value={name}/>
+        <button onClick={handleClick}>Set Name</button>
+      </p>
+    </section>
+  );
+}
+
+Same code using Ref:
+import { useState, useRef} from "react"; 
+export default function Player() {
+  const playerName=useRef();
+  const [name, setName]=useState(null);
+  function handleClick() {
+    setName(playerName.current.value);
+    playerName.current.value = ''; // Clear is fine, but dont use it much to manipulating the dom
+  }
+  return (
+    <section id="player">
+      <h2>Welcome {name ?? 'unknown'} </h2>
+      <p>
+        <input ref={playerName} type="text" />
+        <button onClick={handleClick}>Set Name</button>
+      </p>
+    </section>
+  );
+}
+
+In React, both refs and state manage data within a component, 
+but they differ in how they affect rendering and how they are used. 
+State is used to manage data that can change and cause the component to 
+re-render when updated, while refs are used to directly access and 
+manipulate DOM elements or to store values that don't trigger re-renders
+
+Ref in action - Timer Challenge
+-------------------------------
+Create a component called TimerChallenge:
+import { useState, useRef } from 'react';
+
+export default function TimerChallenge({title , targetTime}) {
+  let timer = useRef();
+
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [timerExpired, setTimerExpired] = useState(false);
+
+  function handleStart() {
+    timer.current = setTimeout(() => {
+      setTimerExpired(true);
+    }, targetTime * 1000);
+    setTimerStarted(true);
+  }
+
+  function handleStop() {
+    clearTimeout(timer.current);
+  } 
+
+  return (
+    <section className="challenge" >
+        <h2>{title}</h2>
+        {timerExpired && <p >You lost!!!</p> }
+        <p className="challenge-time">
+            {targetTime} second{targetTime  > 1 ? 's' : '' }
+        </p>
+        <p>
+            <button onClick={timerStarted ? handleStop: handleStart}>
+              {timerStarted ? 'Stop' : 'Start'} Challenge
+            </button>
+        </p>
+        <p className={timerStarted ? 'active' : undefined}>
+            {timerStarted ? 'Time is running....' : 'Inactive !!!!'}
+        </p>
+    </section>
+  );
+}
+
+
+
+Add it to App.jsx: 
+import Player from './components/Player.jsx';
+import TimerChallenge from './components/TimerChallenge.jsx';
+
+export default function App() {
+  return (
+    <>
+      <Player />
+      <div id="challenges">
+        <TimerChallenge title="Easy" targetTime={1}/>
+        <TimerChallenge title="Not Easy" targetTime={5}/>
+        <TimerChallenge title="Getting Tough" targetTime={10}/>
+        <TimerChallenge title="Pros Only" targetTime={15}/>
+      </div>
+    </>
+  );
+}
+
+
+ResultModal.jsx: 
+
 
 
 ```
+
 
 ### Reference
 ```xml
